@@ -12,23 +12,27 @@
 
 using namespace std;
 
-int validateUserInput(char array[], int size); 
+int validateUserInput(char array[], int size);
+bool checkIfStandardOperation(char array[], int size);
 int main(){
 
     //Variables
     char userInput[100];
+    int size = 0;
+    bool tooBig = false;
 
     cout << "Enter in your operation: "; 
     //Gets input from stdin
+
+    
     fgets(userInput, sizeof(userInput), stdin);
-    int size = 0;
+    
 
     for(int i = 0; i < 100; i++){
         if(userInput[i] == '\n'){
             break;
         }
         size++;
-
     }
     cout << "Size is: " << size << endl;
 
@@ -41,6 +45,9 @@ int main(){
     {
         cout << "Your input was great!";
     }
+    
+
+    
 
     
 
@@ -49,7 +56,12 @@ int main(){
 
 // This fuction checks our user input to ensure we're only including numbers, letters, and a single operator
 int validateUserInput(char array[], int size){
-    bool foundOperator = false; 
+    bool foundOperator = false;
+    
+    if(!isalnum(array[0]) || !isalnum(array[size-1])){
+        cout << "Operator must be in between two operands." << endl;
+        return 0;
+    }
     for(int i = 0; i < size; i++)
     {
         if( (array[i] == ' ') || ( !isalnum(array[i])) )
@@ -82,4 +94,52 @@ int validateUserInput(char array[], int size){
     return 1; 
 
 
+}
+
+// this will check what type of operation we're doing, assuming our user input is valid. 
+bool checkIfStandardOperation(char array[], int size){
+
+    bool foundOperator = false;
+    int index = 0;
+    int digitAmt = 0;
+    int alphaAmt = 0;
+    while(!foundOperator)
+    {
+        if(isdigit(array[index]))
+        {
+            digitAmt++;
+        }
+        else if(isalpha(array[index])){
+            alphaAmt++;
+        }
+        else if(!isalnum(array[index]))
+        {
+            foundOperator = true;
+        }
+        index++;
+    }
+    
+
+    if(alphaAmt > 0){
+        if(isalpha(array[index])){
+            cout << "Cannot have more than one string operand. Re-try your input." << endl;
+            exit(1);
+        }else{
+            //cout << "nonstandard op";
+            return false; // meaning we'll have a non standard operation with letters 
+        }
+        
+    }
+    else if (digitAmt > 0){
+        if(isalpha(array[index])){
+            //cout << "nonstandard op";
+            return false; // we'll be dealing with letters 
+        }else{
+            //cout << "standard op";
+            return true;
+        }
+
+    }
+
+    return false;
 }
